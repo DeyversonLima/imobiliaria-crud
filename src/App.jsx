@@ -1,7 +1,4 @@
-// App.jsx — sugestão para integrar o CadastroImovel
-// Compatível com o main.jsx atual (sem BrowserRouter)
-// Quando o Gabriel subir o roteamento, substituir pela versão com <Route>
-
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { supabase } from './services/supabase'
 import CadastroImovel from './pages/CadastroImovel'
