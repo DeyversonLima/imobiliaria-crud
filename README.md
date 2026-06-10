@@ -1,17 +1,17 @@
-# 🏠 Imobiliária CRUD
+#  Imobiliária CRUD
 
 > **BootCamp — Entrega Final Etapa 3:** Trabalho em Equipe, Banco de Dados e Code Review
 
 
 ---
 
-## 🔗 Deploy
+##  Deploy
 
 **Acesse a aplicação:** [https://imobiliaria-crude.vercel.app/](https://imobiliaria-crude.vercel.app/)
 
 ---
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 Aplicação web de gerenciamento de imóveis desenvolvida como entrega final da **Etapa 3** do BootCamp de Engenharia de Software do **CEUB (Centro Universitário de Brasília)**. O projeto foi desenvolvido em equipe com foco em trabalho colaborativo, integração com banco de dados e práticas de code review.
 
@@ -19,7 +19,7 @@ A aplicação implementa as quatro operações fundamentais de persistência de 
 
 ---
 
-## 🚀 Tecnologias
+##  Tecnologias
 
 | Tecnologia | Função |
 |---|---|
@@ -32,7 +32,7 @@ A aplicação implementa as quatro operações fundamentais de persistência de 
 
 ---
 
-## ⚙️ Funcionalidades
+##  Funcionalidades
 
 - ✅ **Cadastrar** imóveis com informações detalhadas
 - ✅ **Listar** todos os imóveis cadastrados
@@ -42,7 +42,7 @@ A aplicação implementa as quatro operações fundamentais de persistência de 
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 imobiliaria-crud/
@@ -59,7 +59,7 @@ imobiliaria-crud/
 
 ---
 
-## 🛠️ Como Executar Localmente
+##  Como Executar Localmente
 
 ### Pré-requisitos
 
@@ -106,7 +106,7 @@ imobiliaria-crud/
 
 ---
 
-## 🌐 Deploy (Vercel)
+##  Deploy (Vercel)
 
 O projeto está configurado para deploy automático na **Vercel**. Ao fazer push na branch `main`, o deploy é acionado automaticamente.
 
@@ -118,7 +118,7 @@ Para fazer seu próprio deploy:
 
 ---
 
-## 👥 Equipe
+##  Equipe
 
 Projeto desenvolvido em equipe como parte da Etapa 3 do BootCamp — CEUB.
 
@@ -138,10 +138,13 @@ Integração do cadastro com o sistema. |
 Criação dos cards de imóveis.
 Responsividade.
 Estilização da página principal. |
+|**Ian Alves** | Criação dos testes automatizados.
+Configuração do GitHub Actions.
+Integração contínua (CI).|
 
 ---
 
-## 📚 Contexto Acadêmico
+##  Contexto Acadêmico
 
 Este projeto faz parte do **BootCamp de Engenharia de Software** do Centro Universitário de Brasília (CEUB), Etapa 3 — com foco em:
 
@@ -154,4 +157,4 @@ Este projeto faz parte do **BootCamp de Engenharia de Software** do Centro Unive
 
 ## 📄 Licença
 
-Projeto acadêmico — CEUB BootCamp 2025.
+Projeto acadêmico — CEUB BootCamp II 2026.
