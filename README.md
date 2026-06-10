@@ -155,6 +155,6 @@ Este projeto faz parte do **BootCamp de Engenharia de Software** do Centro Unive
 
 ---
 
-## 📄 Licença
+##  Licença
 
 Projeto acadêmico — CEUB BootCamp II 2026.
