@@ -20,7 +20,7 @@ describe('Testes de Integração - Tela Principal', () => {
     render(<App />)
     
     // Procura o título exato que está no seu App.jsx
-    const titulo = screen.getByText('Imobiliária — CRUD de Imóveis')
+    const titulo = screen.getByText('Imobiliária Control')
     
     // Valida se o título realmente apareceu na tela
     expect(titulo).toBeInTheDocument()

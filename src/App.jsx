@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { listarImoveis, excluirImovel } from './services/imoveisService'
 import CadastroImovel from './pages/CadastroImovel'
 import EditarImovel from './pages/EditarImovel'
