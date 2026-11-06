@@ -2,7 +2,7 @@ name: CI Pipeline - Validação de Testes
 
 on:
   push:
-    branches: [ main, feature/testes-e-ci ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -21,10 +21,13 @@ jobs:
           cache: 'npm'
 
       - name: Instalar dependências
-        run: npm install
+        run: npm ci
 
       - name: Executar testes automatizados (Vitest)
         run: npm run test
+
+      - name: Verificar padronização do código
+        run: npm run lint
 
       - name: Verificar compilação do projeto (Build)
         run: npm run build

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../services/supabase";  // caminho correto do projeto
+import { criarImovel } from "../services/imoveisService";
 import "./CadastroImovel.css";
 
 const CAMPOS_INICIAIS = {
@@ -54,7 +54,7 @@ function validar(campos) {
   return { erros, valido };
 }
 
-export default function CadastroImovel() {
+export default function CadastroImovel({ onCadastroSucesso }) {
   const [campos, setCampos] = useState(CAMPOS_INICIAIS);
   const [erros, setErros] = useState({});
   const [tocados, setTocados] = useState({});
@@ -105,15 +105,13 @@ export default function CadastroImovel() {
     setStatus(null);
 
     try {
-      const { error } = await supabase.from("imoveis").insert([
-        {
-          titulo: campos.titulo.trim(),
-          preco: Number(campos.preco),
-          cidade: campos.cidade.trim(),
-          descricao: campos.descricao.trim(),
-          imagem: campos.imagem.trim() || null,
-        },
-      ]);
+      const { error } = await criarImovel({
+        titulo: campos.titulo.trim(),
+        preco: Number(campos.preco),
+        cidade: campos.cidade.trim(),
+        descricao: campos.descricao.trim(),
+        imagem: campos.imagem.trim() || null,
+      });
 
       if (error) throw error;
 
@@ -121,6 +119,7 @@ export default function CadastroImovel() {
       setCampos(CAMPOS_INICIAIS);
       setTocados({});
       setErros({});
+      onCadastroSucesso?.();
     } catch (err) {
       console.error(err);
       setStatus("erro");

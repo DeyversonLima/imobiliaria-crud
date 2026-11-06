@@ -1,160 +1,100 @@
-#  Imobiliária CRUD
+# Imobiliária Control
 
-> **BootCamp — Entrega Final Etapa 3:** Trabalho em Equipe, Banco de Dados e Code Review
+[![CI](https://github.com/DeyversonLima/imobiliaria-crud/actions/workflows/ci.yml/badge.svg)](https://github.com/DeyversonLima/imobiliaria-crud/actions/workflows/ci.yml)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=111)](https://react.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
+Aplicação web responsiva para cadastrar, consultar, editar e excluir imóveis. O projeto foi desenvolvido em equipe no Bootcamp de Engenharia de Software do CEUB e exercita integração com banco de dados, validação de formulários, testes e revisão de código.
 
----
+**Aplicação:** [imobiliaria-crude.vercel.app](https://imobiliaria-crude.vercel.app/)
 
-##  Deploy
+## Funcionalidades
 
-**Acesse a aplicação:** [https://imobiliaria-crude.vercel.app/](https://imobiliaria-crude.vercel.app/)
+- CRUD completo de imóveis;
+- validação de título, preço, cidade, descrição e URL de imagem;
+- formatação monetária em real brasileiro;
+- confirmação antes de exclusões;
+- mensagens acessíveis de sucesso e erro;
+- modo Supabase para persistência remota;
+- modo demonstração com `localStorage` quando não há credenciais configuradas.
 
----
+O modo demonstração torna a interface navegável logo após o clone. Os registros desse modo permanecem somente no navegador e são identificados como dados de exemplo.
 
-##  Sobre o Projeto
+## Tecnologias
 
-Aplicação web de gerenciamento de imóveis desenvolvida como entrega final da **Etapa 3** do BootCamp de Engenharia de Software do **CEUB (Centro Universitário de Brasília)**. O projeto foi desenvolvido em equipe com foco em trabalho colaborativo, integração com banco de dados e práticas de code review.
+| Camada | Tecnologias |
+| --- | --- |
+| Interface | React 19, JavaScript e CSS |
+| Build | Vite 8 |
+| Dados | Supabase/PostgreSQL ou `localStorage` |
+| Qualidade | ESLint, Vitest e Testing Library |
+| Entrega | GitHub Actions e Vercel |
 
-A aplicação implementa as quatro operações fundamentais de persistência de dados (CRUD), permitindo o cadastro, consulta, edição e remoção de imóveis através de uma interface web moderna.
+## Executar localmente
 
----
+Requisitos: Node.js 22 ou superior e npm.
 
-##  Tecnologias
-
-| Tecnologia | Função |
-|---|---|
-| **React** | Biblioteca de interface (componentes e estado) |
-| **Vite** | Build tool e servidor de desenvolvimento |
-| **Supabase** | Backend as a Service (banco de dados PostgreSQL + API REST) |
-| **JavaScript** | Linguagem principal |
-| **CSS** | Estilização da interface |
-| **ESLint** | Linting e padronização de código |
-
----
-
-##  Funcionalidades
-
-- ✅ **Cadastrar** imóveis com informações detalhadas
-- ✅ **Listar** todos os imóveis cadastrados
-- ✅ **Editar** dados de um imóvel existente
-- ✅ **Excluir** imóveis do sistema
-- ✅ **Integração em tempo real** com banco de dados via Supabase
-
----
-
-## Estrutura do Projeto
-
-```
-imobiliaria-crud/
-├── public/               # Arquivos estáticos
-├── src/                  # Código-fonte da aplicação
-│   ├── components/       # Componentes React reutilizáveis
-│   ├── services/         # Integração com Supabase
-│   └── main.jsx          # Entry point da aplicação
-├── index.html            # HTML raiz
-├── vite.config.js        # Configuração do Vite
-├── eslint.config.js      # Configuração do ESLint
-└── package.json          # Dependências e scripts
+```bash
+git clone https://github.com/DeyversonLima/imobiliaria-crud.git
+cd imobiliaria-crud
+npm ci
+npm run dev
 ```
 
----
+Acesse o endereço exibido pelo Vite. Sem arquivo `.env`, a aplicação inicia automaticamente em modo demonstração.
 
-##  Como Executar Localmente
+### Conectar ao Supabase
 
-### Pré-requisitos
+Copie o arquivo de exemplo e preencha somente as chaves públicas do projeto:
 
-- Node.js (v18 ou superior)
-- npm ou yarn
-- Conta no [Supabase](https://supabase.com/) com projeto configurado
+```bash
+cp .env.example .env
+```
 
-### Passo a passo
+```env
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-chave-publicavel
+```
 
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/DeyversonLima/imobiliaria-crud.git
-   cd imobiliaria-crud
-   ```
+A tabela `imoveis` deve possuir as colunas `id`, `titulo`, `preco`, `cidade`, `descricao` e `imagem`. Políticas de Row Level Security devem ser definidas no Supabase conforme o ambiente; nunca coloque uma chave `service_role` no front-end.
 
-2. **Instale as dependências**
-   ```bash
-   npm install
-   ```
+## Scripts
 
-3. **Configure as variáveis de ambiente**
+| Comando | Ação |
+| --- | --- |
+| `npm run dev` | inicia o servidor de desenvolvimento |
+| `npm test` | executa os testes uma vez |
+| `npm run lint` | analisa o código com ESLint |
+| `npm run build` | gera o pacote de produção |
+| `npm run preview` | serve o build localmente |
 
-   Crie um arquivo `.env` na raiz do projeto:
-   ```env
-   VITE_SUPABASE_URL=sua_url_do_projeto_supabase
-   VITE_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
-   ```
+## Arquitetura
 
-4. **Inicie o servidor de desenvolvimento**
-   ```bash
-   npm run dev
-   ```
+```text
+src/
+├── hooks/       # validação e comportamento dos formulários
+├── pages/       # cadastro, edição e interface auxiliar
+├── services/    # Supabase e fallback local
+├── App.jsx      # listagem e coordenação das telas
+└── main.jsx     # ponto de entrada
+```
 
-5. Acesse em `http://localhost:5173`
+As operações de dados ficam concentradas em `services/imoveisService.js`. Assim, a interface usa a mesma API interna tanto no modo Supabase quanto no modo demonstração.
 
-### Scripts disponíveis
+## Testes e CI
 
-| Comando | Descrição |
-|---|---|
-| `npm run dev` | Inicia o servidor de desenvolvimento |
-| `npm run build` | Gera o build de produção |
-| `npm run preview` | Visualiza o build de produção localmente |
-| `npm run lint` | Executa o ESLint |
+```bash
+npm test
+npm run lint
+npm run build
+```
 
----
+O GitHub Actions executa instalação reproduzível com `npm ci`, testes, lint e build em cada push ou pull request para `main`.
 
-##  Deploy (Vercel)
+## Participação
 
-O projeto está configurado para deploy automático na **Vercel**. Ao fazer push na branch `main`, o deploy é acionado automaticamente.
+Projeto acadêmico colaborativo do CEUB. Deyverson Lima atuou na configuração inicial, integração com Supabase, implementação das operações CRUD e organização da camada de serviços. A equipe também trabalhou em interface, validação, testes, documentação, code review e deploy.
 
-Para fazer seu próprio deploy:
+## Escopo
 
-1. Importe o repositório na [Vercel](https://vercel.com/)
-2. Configure as variáveis de ambiente (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`)
-3. Clique em **Deploy**
-
----
-
-##  Equipe
-
-Projeto desenvolvido em equipe como parte da Etapa 3 do BootCamp — CEUB.
-
-| Membro | Responsabilidade |
-|---|---|
-| **Gabriel Gomes** | Deploy na Vercel.
-Atualização da documentação.
-Organização da entrega final. |
-| **Deyverson Lima** | Configuração inicial do projeto.
-Integração com Supabase.
-Implementação do CRUD.
-Estrutura de serviços e comunicação com banco de dados. |
-| **Leonel Martins Linhares**| Desenvolvimento do formulário de cadastro.
-Validação de campos.
-Integração do cadastro com o sistema. |
-| **Gabriel Antônio de Oliveira** | Desenvolvimento da interface.
-Criação dos cards de imóveis.
-Responsividade.
-Estilização da página principal. |
-|**Ian Alves** | Criação dos testes automatizados.
-Configuração do GitHub Actions.
-Integração contínua (CI).|
-
----
-
-##  Contexto Acadêmico
-
-Este projeto faz parte do **BootCamp de Engenharia de Software** do Centro Universitário de Brasília (CEUB), Etapa 3 — com foco em:
-
-- Trabalho colaborativo em equipe
-- Integração com banco de dados real
-- Práticas de code review via Pull Requests e Issues
-- Deploy de aplicações em produção
-
----
-
-##  Licença
-
-Projeto acadêmico — CEUB BootCamp II 2026.
+Este é um projeto educacional. Antes de uso comercial seriam necessários autenticação, perfis de acesso, políticas RLS revisadas, observabilidade e testes end-to-end.

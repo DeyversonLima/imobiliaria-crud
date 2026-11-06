@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { listarImoveis, excluirImovel } from './services/imoveisService'
 import CadastroImovel from './pages/CadastroImovel'
 import EditarImovel from './pages/EditarImovel'
@@ -17,10 +17,6 @@ function App() {
   const [notificacao, setNotificacao] = useState(null) // { tipo: 'sucesso' | 'erro', mensagem: '' }
 
   // Carrega os imóveis ao montar o componente
-  useEffect(() => {
-    carregarImoveis()
-  }, [])
-
   // Ouvinte de teclado para controlar com segurança o Modal de Exclusão
   useEffect(() => {
     const gerenciarTeclado = (e) => {
@@ -40,13 +36,13 @@ function App() {
   }, [imovelParaExcluir])
 
   // Gerenciador de Avisos Flutuantes (Toasts)
-  const mostrarNotificacao = (tipo, mensagem) => {
+  const mostrarNotificacao = useCallback((tipo, mensagem) => {
     setNotificacao({ tipo, mensagem })
     setTimeout(() => setNotificacao(null), 4000) // Desaparece após 4 segundos
-  }
+  }, [])
 
   // Busca os imóveis utilizando o seu Service oficial
-  async function carregarImoveis() {
+  const carregarImoveis = useCallback(async () => {
     setLoading(true)
     const { data, error } = await listarImoveis()
     if (error) {
@@ -56,7 +52,12 @@ function App() {
       setImoveis(data || [])
     }
     setLoading(false)
-  }
+  }, [mostrarNotificacao])
+
+  useEffect(() => {
+    const request = window.setTimeout(carregarImoveis, 0)
+    return () => window.clearTimeout(request)
+  }, [carregarImoveis])
 
   // Abre o modal customizado definindo o imóvel alvo
   function iniciarExclusao(imovel) {

@@ -1,15 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { atualizarImovel } from '../services/imoveisService'
+
+function criarFormData(imovel) {
+  return {
+    titulo: imovel?.titulo || '',
+    preco: imovel?.preco ? String(Number(imovel.preco) * 100) : '',
+    cidade: imovel?.cidade || '',
+    descricao: imovel?.descricao || '',
+    imagem: imovel?.imagem || ''
+  }
+}
 
 function EditarImovel({ imovel, onEdicaoSucesso, onCancelar }) {
   // Estado isolado para o formulário de edição (incluindo descricao e imagem)
-  const [formData, setFormData] = useState({
-    titulo: '',
-    preco: '',
-    cidade: '',
-    descricao: '',
-    imagem: ''
-  })
+  const [formData, setFormData] = useState(() => criarFormData(imovel))
   
   const [carregando, setCarregando] = useState(false)
   
@@ -33,20 +37,6 @@ function EditarImovel({ imovel, onEdicaoSucesso, onCancelar }) {
       currency: 'BRL'
     })
   }
-
-  // Dispara assim que o componente monta ou quando o imóvel muda
-  useEffect(() => {
-    if (imovel) {
-      setFormData({
-        titulo: imovel.titulo || '',
-        // Multiplica por 100 para o número virar a base de dígitos da máscara de centavos
-        preco: imovel.preco ? String(Number(imovel.preco) * 100) : '',
-        cidade: imovel.cidade || '',
-        descricao: imovel.descricao || '',
-        imagem: imovel.imagem || ''
-      })
-    }
-  }, [imovel])
 
   // Monitora as mudanças nos inputs e aplica a máscara de moeda
   const handleChange = (e) => {

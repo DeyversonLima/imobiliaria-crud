@@ -10,6 +10,45 @@
 // Importa o cliente configurado do Supabase (que possui as chaves de acesso ao projeto)
 import { supabase } from './supabase'
 
+const STORAGE_KEY = 'imobiliaria-control:imoveis'
+const DEMO_IMOVEIS = [
+  {
+    id: 'demo-1',
+    titulo: 'Apartamento com varanda',
+    preco: 485000,
+    cidade: 'Brasília, DF',
+    descricao: 'Imóvel demonstrativo com dois quartos e varanda integrada.',
+    imagem: null
+  },
+  {
+    id: 'demo-2',
+    titulo: 'Casa próxima ao parque',
+    preco: 720000,
+    cidade: 'Águas Claras, DF',
+    descricao: 'Registro de exemplo usado no modo local da aplicação.',
+    imagem: null
+  }
+]
+
+function readLocalImoveis() {
+  const stored = localStorage.getItem(STORAGE_KEY)
+  if (!stored) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_IMOVEIS))
+    return DEMO_IMOVEIS
+  }
+
+  try {
+    return JSON.parse(stored)
+  } catch {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_IMOVEIS))
+    return DEMO_IMOVEIS
+  }
+}
+
+function writeLocalImoveis(imoveis) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(imoveis))
+}
+
 /**
  * READ (Leitura) — Busca todos os registros.
  * Equivale ao comando SQL: SELECT * FROM imoveis;
@@ -17,9 +56,10 @@ import { supabase } from './supabase'
  * 'data' é um array com todos os imóveis encontrados, e 'error' traz falhas se houver.
  */
 export async function listarImoveis() {
-  return await supabase
-    .from('imoveis') // Define qual tabela do banco de dados será consultada
-    .select('*')    // O '*' indica que queremos buscar TODAS as colunas dessa tabela
+  if (supabase) {
+    return supabase.from('imoveis').select('*')
+  }
+  return { data: readLocalImoveis(), error: null }
 }
 
 /**
@@ -29,9 +69,13 @@ export async function listarImoveis() {
  * @returns {Promise} Retorna { error } para sabermos se a inserção falhou ou deu certo.
  */
 export async function criarImovel(imovel) {
-  return await supabase
-    .from('imoveis')     // Define a tabela alvo
-    .insert([imovel])    // O Supabase espera receber um array de objetos, por isso usamos colchetes [ ]
+  if (supabase) {
+    return supabase.from('imoveis').insert([imovel])
+  }
+  const imoveis = readLocalImoveis()
+  const novoImovel = { ...imovel, id: crypto.randomUUID() }
+  writeLocalImoveis([novoImovel, ...imoveis])
+  return { data: [novoImovel], error: null }
 }
 
 /**
@@ -42,11 +86,14 @@ export async function criarImovel(imovel) {
  * @returns {Promise} Retorna { error } para checagem de sucesso.
  */
 export async function atualizarImovel(id, dados) {
-  return await supabase
-    .from('imoveis')       // Define a tabela alvo
-    .update(dados)         // Passa o objeto com as colunas que receberão novos valores
-    .eq('id', id)          // Cláusula de filtro (Equal/Igual). ATENÇÃO: Sem isso, atualizaríamos a tabela inteira! 
-                           // Diz para o banco: "Apenas onde a coluna 'id' for igual ao 'id' que passei por parâmetro".
+  if (supabase) {
+    return supabase.from('imoveis').update(dados).eq('id', id)
+  }
+  const imoveis = readLocalImoveis()
+  writeLocalImoveis(imoveis.map((imovel) => (
+    imovel.id === id ? { ...imovel, ...dados } : imovel
+  )))
+  return { error: null }
 }
 
 /**
@@ -56,9 +103,9 @@ export async function atualizarImovel(id, dados) {
  * @returns {Promise} Retorna { error } para validação.
  */
 export async function excluirImovel(id) {
-  return await supabase
-    .from('imoveis')       // Define a tabela alvo
-    .delete()              // Ativa o comando de deleção de registro
-    .eq('id', id)          // Cláusula de filtro (Equal/Igual). IMPORTANTE: Garante que o Supabase delete 
-                           // APENAS a linha específica que possui esse ID correspondente.
+  if (supabase) {
+    return supabase.from('imoveis').delete().eq('id', id)
+  }
+  writeLocalImoveis(readLocalImoveis().filter((imovel) => imovel.id !== id))
+  return { error: null }
 }
