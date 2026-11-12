@@ -16,9 +16,11 @@ Aplicação web responsiva para cadastrar, consultar, editar e excluir imóveis.
 - confirmação antes de exclusões;
 - mensagens acessíveis de sucesso e erro;
 - modo Supabase para persistência remota;
-- modo demonstração com `localStorage` quando não há credenciais configuradas.
+- modo demonstração com `localStorage` quando não há credenciais configuradas;
+- catálogo local inicial com 15 imóveis detalhados;
+- identidade visual consistente na listagem, cadastro e edição.
 
-O modo demonstração torna a interface navegável logo após o clone. Os registros desse modo permanecem somente no navegador e são identificados como dados de exemplo.
+O modo demonstração torna a interface navegável logo após o clone. Ele começa com 15 registros variados e permite executar todo o CRUD. Os dados permanecem somente no navegador e são identificados como demonstração; imóveis cadastrados pelo usuário são preservados nas atualizações da base de exemplos. Se houver credenciais, mas o projeto Supabase estiver pausado ou inacessível, o serviço adota automaticamente o modo local.
 
 ## Tecnologias
 
@@ -58,6 +60,16 @@ VITE_SUPABASE_ANON_KEY=sua-chave-publicavel
 
 A tabela `imoveis` deve possuir as colunas `id`, `titulo`, `preco`, `cidade`, `descricao` e `imagem`. Políticas de Row Level Security devem ser definidas no Supabase conforme o ambiente; nunca coloque uma chave `service_role` no front-end.
 
+### Modos de dados
+
+O serviço escolhe a fonte de dados sem alterar a API usada pelos componentes:
+
+1. com credenciais e Supabase acessível, as operações usam a tabela `imoveis`;
+2. sem credenciais, a aplicação usa imediatamente o `localStorage`;
+3. com credenciais, mas Supabase pausado ou indisponível, a operação adota o modo local automaticamente.
+
+A interface mostra a fonte ativa. Na primeira execução local são criados 15 imóveis demonstrativos detalhados. A versão da base de exemplos é controlada separadamente, permitindo incluir novos exemplos sem apagar registros cadastrados pelo usuário.
+
 ## Scripts
 
 | Comando | Ação |
@@ -81,6 +93,8 @@ src/
 
 As operações de dados ficam concentradas em `services/imoveisService.js`. Assim, a interface usa a mesma API interna tanto no modo Supabase quanto no modo demonstração.
 
+Listagem, cadastro e edição usam os mesmos tokens e componentes visuais definidos em `src/index.css`. O projeto evita bibliotecas de componentes para preservar o escopo acadêmico e deixar evidente o trabalho da equipe com React, CSS e integração de dados.
+
 ## Testes e CI
 
 ```bash
@@ -89,7 +103,7 @@ npm run lint
 npm run build
 ```
 
-O GitHub Actions executa instalação reproduzível com `npm ci`, testes, lint e build em cada push ou pull request para `main`.
+O GitHub Actions executa instalação reproduzível com `npm ci`, testes, lint e build em cada push ou pull request para `main`. A suíte também confirma que o modo demonstração inicia com 15 imóveis e migra dados antigos sem remover registros do usuário.
 
 ## Participação
 

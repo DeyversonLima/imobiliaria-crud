@@ -7,6 +7,7 @@ import App from './App'
 
 // Finge a conexão com o banco de dados para o teste não travar
 vi.mock('./services/supabase', () => ({
+  isSupabaseConfigured: true,
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn().mockResolvedValue({ data: [], error: null })

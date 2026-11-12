@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { criarImovel } from "../services/imoveisService";
-import "./CadastroImovel.css";
 
 const CAMPOS_INICIAIS = {
   titulo: "",
@@ -129,12 +128,11 @@ export default function CadastroImovel({ onCadastroSucesso }) {
   }
 
   return (
-    <div className="cadastro-wrapper">
-      <div className="cadastro-card">
-        <header className="cadastro-header">
-          <div className="cadastro-icon">🏠</div>
-          <h1>Cadastrar Imóvel</h1>
-          <p>Preencha os dados abaixo para anunciar seu imóvel</p>
+    <section className="form-container">
+        <header className="form-header">
+          <span className="eyebrow">Novo registro</span>
+          <h1>Cadastrar imóvel</h1>
+          <p>Preencha os dados principais para incluir um imóvel na listagem.</p>
         </header>
 
         {status === "sucesso" && (
@@ -281,15 +279,16 @@ export default function CadastroImovel({ onCadastroSucesso }) {
             )}
           </div>
 
-          <button type="submit" className="btn-cadastrar" disabled={carregando}>
+          <div className="form-actions">
+          <button type="submit" className="btn btn-primary" disabled={carregando}>
             {carregando ? (
               <><span className="spinner" /> Cadastrando...</>
             ) : (
               "Cadastrar Imóvel"
             )}
           </button>
+          </div>
         </form>
-      </div>
-    </div>
+    </section>
   );
 }

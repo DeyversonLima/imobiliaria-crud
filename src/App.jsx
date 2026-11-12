@@ -2,11 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { listarImoveis, excluirImovel } from './services/imoveisService'
 import CadastroImovel from './pages/CadastroImovel'
 import EditarImovel from './pages/EditarImovel'
+import { isSupabaseConfigured } from './services/supabase'
 
 function App() {
   // Estados da aplicação
   const [imoveis, setImoveis] = useState([])
   const [loading, setLoading] = useState(true)
+  const [modoDados, setModoDados] = useState(isSupabaseConfigured ? 'remote' : 'local')
   const [pagina, setPagina] = useState('home') // 'home' | 'cadastro' | 'editar'
   
   // Estado para armazenar o objeto do imóvel que vamos editar
@@ -44,12 +46,13 @@ function App() {
   // Busca os imóveis utilizando o seu Service oficial
   const carregarImoveis = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await listarImoveis()
+    const { data, error, source } = await listarImoveis()
     if (error) {
       console.error('Erro ao buscar imóveis:', error)
       mostrarNotificacao('erro', 'Erro ao carregar a lista de imóveis.')
     } else {
       setImoveis(data || [])
+      setModoDados(source ?? (isSupabaseConfigured ? 'remote' : 'local'))
     }
     setLoading(false)
   }, [mostrarNotificacao])
@@ -105,10 +108,10 @@ function App() {
      ========================================== */
   if (pagina === 'cadastro') {
     return (
-      <div className="container">
-        <header style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+      <div className="container app-page">
+        <header className="page-topbar">
           <button className="btn btn-secondary" onClick={() => setPagina('home')}>
-            ← Voltar para a Home
+            ← Voltar para a listagem
           </button>
         </header>
         
@@ -127,10 +130,10 @@ function App() {
      ========================================== */
   if (pagina === 'editar') {
     return (
-      <div className="container">
-        <header style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+      <div className="container app-page">
+        <header className="page-topbar">
           <button className="btn btn-secondary" onClick={() => { setPagina('home'); setImovelEmEdicao(null); }}>
-            ← Cancelar e Voltar
+            ← Voltar para a listagem
           </button>
         </header>
 
@@ -154,48 +157,13 @@ function App() {
      TELA PRINCIPAL (HOME) - LISTAGEM EM CARDS
      ========================================== */
   return (
-    <div className="container" style={{ position: 'relative' }}>
-      
-      {/* Injeção de Estilos CSS Locais para os componentes dinâmicos */}
-      <style>{`
-        /* Animações e Estilos do Toast */
-        @keyframes slideInToast {
-          from { transform: translate(-50%, -20px); opacity: 0; }
-          to { transform: translate(-50%, 0); opacity: 1; }
-        }
-        .toast-notificacao {
-          position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
-          color: white; padding: 1rem 2rem; border-radius: 8px; z-index: 10000;
-          display: flex; alignItems: center; gap: 0.75rem; font-size: 0.95rem; font-weight: 500;
-          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-          animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Estilos do Modal de Exclusão Seguro */
-        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleUpModal { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .modal-overlay {
-          position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-          background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-          display: flex; align-items: center; justify-content: center; z-index: 9999;
-          animation: fadeInOverlay 0.2s ease-out forwards;
-        }
-        .modal-box {
-          background: var(--card-bg, #ffffff); padding: 2rem; border-radius: 12px;
-          max-width: 450px; width: 90%; border: 1px solid var(--border, #e2e8f0);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-          animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .modal-box h3 { font-size: 1.3rem; color: var(--text-main, #1e293b); margin-bottom: 0.5rem; }
-        .modal-box p { font-size: 0.95rem; color: var(--text-muted, #64748b); line-height: 1.5; margin-bottom: 1.5rem; }
-      `}</style>
+    <div className="container app-page">
 
       {/* Alerta Customizado na Tela (Aviso Não-Brutalista) */}
       {notificacao && (
         <div 
-          className="toast-notificacao" 
-          style={{ backgroundColor: notificacao.tipo === 'sucesso' ? '#16a34a' : '#dc2626' }}
+          className={`toast-notificacao toast-${notificacao.tipo}`}
+          role="status"
         >
           <span>{notificacao.tipo === 'sucesso' ? '✅' : '⚠️'}</span>
           <span>{notificacao.mensagem}</span>
@@ -204,10 +172,10 @@ function App() {
 
       {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO CUSTOMIZADO E SEGURO */}
       {imovelParaExcluir && (
-        <div className="modal-overlay" onClick={() => setImovelParaExcluir(null)}>
+        <div className="modal-overlay" role="presentation" onClick={() => setImovelParaExcluir(null)}>
           {/* O e.stopPropagation impede que cliques dentro da caixa fechem o modal */}
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>Confirmar Exclusão</h3>
+          <div className="modal-box" role="dialog" aria-modal="true" aria-labelledby="delete-title" onClick={(e) => e.stopPropagation()}>
+            <h3 id="delete-title">Confirmar exclusão</h3>
             <p>
               Você tem certeza que deseja excluir permanentemente o imóvel 
               <strong> {imovelParaExcluir.titulo}</strong>?<br/>
@@ -233,21 +201,29 @@ function App() {
         </div>
       )}
 
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <header className="app-header">
         <div>
+          <span className="eyebrow">Painel acadêmico de imóveis</span>
           <h1>Imobiliária Control</h1>
-          <p>Gerencie seus imóveis de forma simples e rápida.</p>
+          <p>Cadastre, consulte, edite e remova imóveis em uma interface simples.</p>
         </div>
         <button className="btn btn-primary" onClick={irParaCadastro}>
           + Cadastrar Novo Imóvel
         </button>
       </header>
 
-      <hr style={{ margin: '2rem 0', borderColor: '#e2e8f0' }} />
-
       <main>
+        <div className="list-toolbar">
+          <div>
+            <h2>Imóveis cadastrados</h2>
+            <p>{imoveis.length} {imoveis.length === 1 ? 'registro encontrado' : 'registros encontrados'}</p>
+          </div>
+          <span className={`mode-badge ${modoDados}`}>
+            {modoDados === 'remote' ? 'Supabase conectado' : 'Modo demonstração local'}
+          </span>
+        </div>
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#64748b' }}>Buscando imóveis no Supabase...</p>
+          <div className="loading-state" role="status">Carregando imóveis...</div>
         ) : (
           <div className="cards-grid">
             {imoveis.length === 0 ? (
@@ -256,11 +232,18 @@ function App() {
               </div>
             ) : (
               imoveis.map((imovel) => (
-                <div key={imovel.id} className="card">
+                <article key={imovel.id} className="card">
+                  <div className="card-media">
+                    {imovel.imagem ? (
+                      <img src={imovel.imagem} alt="" onError={(event) => event.currentTarget.parentElement.classList.add('image-error')} />
+                    ) : null}
+                    <span className="card-placeholder" aria-hidden="true">⌂</span>
+                  </div>
                   <div className="card-content">
                     <h3 className="card-title">{imovel.titulo}</h3>
                     <p className="card-price">{formatarPreco(imovel.preco)}</p>
                     <p className="card-city">📍 {imovel.cidade}</p>
+                    <p className="card-description">{imovel.descricao}</p>
                   </div>
                   
                   <div className="card-actions">
@@ -277,7 +260,7 @@ function App() {
                       Excluir
                     </button>
                   </div>
-                </div>
+                </article>
               ))
             )}
           </div>
