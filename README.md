@@ -6,7 +6,7 @@
 
 Aplicação web responsiva para cadastrar, consultar, editar e excluir imóveis. O projeto foi desenvolvido em equipe no Bootcamp de Engenharia de Software do CEUB e exercita integração com banco de dados, validação de formulários, testes e revisão de código.
 
-**Aplicação:** [imobiliaria-crude.vercel.app](https://imobiliaria-crude.vercel.app/)
+**Aplicação:** [imobiliaria-crud.vercel.app](https://imobiliaria-crud.vercel.app/)
 
 ## Funcionalidades
 
